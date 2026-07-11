@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 Create TCP listeners for GPS tracking devices in a few lines. Written in
-TypeScript, zero runtime dependencies, dual ESM/CJS, Node.js >= 18.
+TypeScript, zero runtime dependencies, dual ESM/CJS, Node.js >= 18.17.
 
 ```ts
 import { createServer, adapters } from 'gps-tracking';

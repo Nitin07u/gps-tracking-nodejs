@@ -110,8 +110,12 @@ export class GpsServer extends TypedEmitter<ServerEvents> {
     this.#connections.add(device);
     this.#log('debug', `connection from ${socket.remoteAddress ?? '?'}`);
 
-    device.on('identified', (deviceId) => {
-      this.#devices.set(deviceId, device);
+    // Register only after authentication: an unauthenticated peer claiming an
+    // existing id must not become routable via getDevice()/sendTo().
+    device.on('login', () => {
+      if (device.id) {
+        this.#devices.set(device.id, device);
+      }
     });
     device.on('disconnect', () => {
       this.#connections.delete(device);

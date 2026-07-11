@@ -12,6 +12,13 @@ describe('minuteToDecimal', () => {
   it('defaults to the northern/eastern hemisphere', () => {
     expect(minuteToDecimal(2235.1777)).toBeCloseTo(22.586295, 6);
   });
+
+  it('returns NaN for malformed input instead of a bogus coordinate', () => {
+    expect(minuteToDecimal(1260.0, 'N')).toBeNaN(); // minutes >= 60
+    expect(minuteToDecimal(9199.0, 'N')).toBeNaN(); // > 90 degrees of latitude
+    expect(minuteToDecimal(2235.1777, 'X')).toBeNaN(); // unknown hemisphere
+    expect(minuteToDecimal(Number.NaN, 'N')).toBeNaN();
+  });
 });
 
 describe('getDistance', () => {

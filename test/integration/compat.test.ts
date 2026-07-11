@@ -73,13 +73,20 @@ describe('v1 compatibility layer', () => {
   });
 
   it('emits the DeprecationWarning exactly once per process', async () => {
+    // Fresh module registry so this test observes the first legacy use,
+    // regardless of what earlier tests in this worker already triggered.
+    vi.resetModules();
     const emitWarning = vi.spyOn(process, 'emitWarning').mockImplementation(() => {});
-    const first = await startLegacyServer();
-    const second = await startLegacyServer();
-    expect(first.server).toBeDefined();
-    expect(second.server).toBeDefined();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const freshGps = await import('../../src/index.js');
+
+    const first = freshGps.server({ port: 0, device_adapter: 'TK103' });
+    const second = freshGps.server({ port: 0, device_adapter: 'TK103' });
+    cleanups.push(() => first.v2.close());
+    cleanups.push(() => second.v2.close());
+
     const deprecations = emitWarning.mock.calls.filter((args) => (args[1] as unknown) === 'DeprecationWarning');
-    expect(deprecations.length).toBeLessThanOrEqual(1);
+    expect(deprecations.length).toBe(1);
   });
 
   it('rejects unknown adapter names like v1 did', () => {

@@ -72,6 +72,9 @@ export class Tk510Adapter extends BaseAdapter {
         break;
       }
       case '9999': {
+        if (data.length < 1) {
+          throw new PacketParseError('TK510: alarm payload too short');
+        }
         const raw = data.readUInt8(0).toString(16).padStart(2, '0');
         packet = { ...base, action: 'alarm', alarm: lookupAlarm(ALARMS, raw, 'TK510') };
         break;

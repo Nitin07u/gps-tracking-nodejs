@@ -91,7 +91,7 @@ export class Tk103Adapter extends BaseAdapter {
 
   // YYMMDD + A/V + DDMM.MMMM + N/S + DDDMM.MMMM + E/W + speed(5) + HHMMSS + course(6) + io(8) + L + mileage(hex 8)
   #parsePosition(data: string): GpsPosition {
-    if (data.length < 39) {
+    if (data.length < 45) {
       throw new PacketParseError(`TK103: position payload too short: ${data}`);
     }
     const latitude = minuteToDecimal(Number.parseFloat(data.slice(7, 16)), data[16] ?? 'N');

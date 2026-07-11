@@ -5,7 +5,11 @@ import { PacketParseError } from '../errors.js';
 import { KNOTS_TO_KMH, minuteToDecimal } from './geo.js';
 import type { Alarm, GpsPosition } from '../types.js';
 
-/** Build a UTC Date from date/time components (2-digit year). */
+/**
+ * Build a UTC Date from date/time components (2-digit year).
+ * Throws PacketParseError on non-integer or overflowing components
+ * (Date.UTC would silently normalize e.g. month 13 into the next year).
+ */
 export function utcDate(
   yy: number,
   month: number,
@@ -14,12 +18,28 @@ export function utcDate(
   minutes: number,
   seconds: number,
 ): Date {
-  return new Date(Date.UTC(2000 + yy, month - 1, day, hours, minutes, seconds));
+  const values = [yy, month, day, hours, minutes, seconds];
+  if (!values.every(Number.isInteger) || yy < 0 || yy > 99) {
+    throw new PacketParseError('invalid date components');
+  }
+  const date = new Date(Date.UTC(2000 + yy, month - 1, day, hours, minutes, seconds));
+  if (
+    date.getUTCFullYear() !== 2000 + yy ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day ||
+    date.getUTCHours() !== hours ||
+    date.getUTCMinutes() !== minutes ||
+    date.getUTCSeconds() !== seconds
+  ) {
+    throw new PacketParseError('invalid date components');
+  }
+  return date;
 }
 
-/** Parse a pair of ASCII digits from a string at the given offset. */
+/** Parse a pair of ASCII digits from a string at the given offset. NaN if not two digits. */
 export function digits2(str: string, offset: number): number {
-  return Number.parseInt(str.slice(offset, offset + 2), 10);
+  const pair = str.slice(offset, offset + 2);
+  return /^\d{2}$/.test(pair) ? Number(pair) : Number.NaN;
 }
 
 /** RMC-style DDMMYY date + HHMMSS time → UTC Date. */

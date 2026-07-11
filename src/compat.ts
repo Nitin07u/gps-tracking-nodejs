@@ -82,6 +82,7 @@ function wrapLegacyAdapter(module: LegacyAdapterModule): AdapterClass {
 
     #instance: LegacyAdapterInstance;
     #lastParts: LegacyMsgParts | undefined;
+    #pendingLoginParts: LegacyMsgParts | undefined;
 
     constructor(device: Device) {
       super(device);
@@ -122,6 +123,9 @@ function wrapLegacyAdapter(module: LegacyAdapterModule): AdapterClass {
           if (!parts.device_id) {
             throw new PacketParseError("The adapter doesn't return the device_id");
           }
+          // Kept separately: frames parsed while the login is pending (e.g. a
+          // heartbeat before acceptLogin) must not become the authorize() payload.
+          this.#pendingLoginParts = parts;
           return { ...base, action: 'loginRequest', deviceId: parts.device_id };
         case 'ping': {
           const gps = this.#instance.get_ping_data?.(parts);
@@ -143,7 +147,9 @@ function wrapLegacyAdapter(module: LegacyAdapterModule): AdapterClass {
     }
 
     authorize(): void {
-      this.#instance.authorize(this.#lastParts);
+      const loginParts = this.#pendingLoginParts;
+      this.#pendingLoginParts = undefined;
+      this.#instance.authorize(loginParts ?? this.#lastParts);
     }
 
     override requestLogin(): void {

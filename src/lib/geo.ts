@@ -12,12 +12,18 @@ export function minutes30000ToDegrees(value: number): number {
 /**
  * Convert a NMEA-style degrees+minutes value (DDMM.MMMM / DDDMM.MMMM)
  * to decimal degrees. Negative for southern/western hemispheres.
+ * Returns NaN for malformed input (minutes >= 60, out-of-range degrees,
+ * unknown hemisphere) so parsers reject it instead of emitting a bogus fix.
  */
 export function minuteToDecimal(value: number, hemisphere: string = 'N'): number {
   const degrees = Math.floor(value / 100);
   const minutes = value - degrees * 100;
-  const decimal = degrees + minutes / 60;
   const h = hemisphere.toUpperCase();
+  const maxDegrees = h === 'E' || h === 'W' ? 180 : h === 'N' || h === 'S' ? 90 : Number.NaN;
+  if (!Number.isFinite(value) || degrees < 0 || !(degrees <= maxDegrees) || minutes >= 60) {
+    return Number.NaN;
+  }
+  const decimal = degrees + minutes / 60;
   return h === 'S' || h === 'W' ? -decimal : decimal;
 }
 

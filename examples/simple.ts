@@ -1,6 +1,6 @@
 /**
  * Minimal v2 example: listen for TK103 devices on port 8090.
- * Run with: npx tsx examples/simple.ts (or compile with tsc)
+ * Run with: npx tsx examples/simple.ts
  */
 import { createServer, adapters } from '../src/index.js';
 

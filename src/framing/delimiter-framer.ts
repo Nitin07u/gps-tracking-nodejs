@@ -46,6 +46,11 @@ export class DelimiterFramer implements Framer {
         }
         break;
       }
+      if (end + 1 > this.#maxFrameLength) {
+        // Oversized but terminated frame: discard it and keep going after it.
+        this.#buffer = this.#buffer.subarray(end + 1);
+        continue;
+      }
       frames.push(this.#buffer.subarray(0, end + 1));
       this.#buffer = this.#buffer.subarray(end + 1);
     }

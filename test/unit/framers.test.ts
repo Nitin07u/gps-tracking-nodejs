@@ -40,10 +40,16 @@ describe('DelimiterFramer', () => {
     expect(framer.push(stream)).toEqual([frameA, frameB]);
   });
 
-  it('re-syncs when a frame exceeds maxFrameLength', () => {
+  it('re-syncs when an unterminated frame exceeds maxFrameLength', () => {
     const framer = new DelimiterFramer({ start: 0x28, end: 0x29, maxFrameLength: 8 });
     expect(framer.push(Buffer.from('(waaaaaaaaaaaaaaytoolong'))).toEqual([]);
-    expect(framer.push(frameA)).toEqual([frameA]);
+    expect(framer.push(Buffer.from('(ok)'))).toEqual([Buffer.from('(ok)')]);
+  });
+
+  it('drops oversized frames even when properly terminated', () => {
+    const framer = new DelimiterFramer({ start: 0x28, end: 0x29, maxFrameLength: 8 });
+    const oversized = Buffer.from('(waaaaaaaaaytoolong)');
+    expect(framer.push(Buffer.concat([oversized, Buffer.from('(ok)')]))).toEqual([Buffer.from('(ok)')]);
   });
 });
 
