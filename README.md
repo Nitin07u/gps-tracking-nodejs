@@ -33,9 +33,17 @@ await server.listen();
 
 ## Installation
 
+> [!IMPORTANT]
+> **v2 is currently in beta.** These docs describe v2. Plain
+> `npm install gps-tracking` still installs the old v1 (1.1.1) until the
+> final 2.0.0 is released — install the beta explicitly:
+
 ```bash
-npm install gps-tracking
+npm install gps-tracking@beta
 ```
+
+Your v1 code runs on the beta without changes, so trying it is low-risk —
+please [report any issues](https://github.com/freshworkstudio/gps-tracking-nodejs/issues).
 
 ## Supported devices
 
