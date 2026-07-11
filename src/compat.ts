@@ -24,7 +24,7 @@ function warnDeprecated(): void {
     warned = true;
     process.emitWarning(
       'The gps-tracking v1 API (gps.server(...), snake_case events) is deprecated and will be removed in v3. ' +
-        'See https://github.com/freshworkstudio/gps-tracking-nodejs/blob/master/MIGRATION.md',
+        'See https://github.com/freshworkstudio/gps-tracking-nodejs/blob/main/MIGRATION.md',
       'DeprecationWarning',
     );
   }
