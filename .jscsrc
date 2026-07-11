@@ -1,5 +1,0 @@
-{
-    "preset": "airbnb",
-    "excludeFiles": ["node_modules/**", "bower_components/**"],
-    "maxErrors": 1000
-}

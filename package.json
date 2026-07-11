@@ -1,31 +1,71 @@
 {
   "name": "gps-tracking",
-  "version": "1.1.0",
-  "description": "Let you work with some GPS trackers that connects through tcp.",
-  "main": "index.js",
+  "version": "2.0.0-beta.1",
+  "description": "TCP server for GPS trackers (TK103, GT06, GK309, SinoTrack ST-901/H02, GT02A, TK510). TypeScript, zero dependencies.",
+  "type": "module",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "MIGRATION.md"
+  ],
+  "sideEffects": false,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run build && npm test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/freshworkstudio/gps-tracking-nodejs.git"
+    "url": "git+https://github.com/freshworkstudio/gps-tracking-nodejs.git"
   },
   "keywords": [
     "gps",
     "tracker",
-    "Tk103",
-    "car",
-    "gps"
+    "tk103",
+    "gt06",
+    "gk309",
+    "sinotrack",
+    "st-901",
+    "h02",
+    "gt02a",
+    "tk510",
+    "tcp",
+    "gps-server",
+    "tracking"
   ],
-  "author": "Gonzalo De-Spirito (http://www.freshworkstudio.com/)",
+  "author": "Gonzalo De-Spirito (https://www.freshworkstudio.com/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/freshworkstudio/gps-tracking-nodejs/issues"
   },
   "homepage": "https://github.com/freshworkstudio/gps-tracking-nodejs",
-  "dependencies": {
-    "crc": "^3.5.0",
-    "crc16-ccitt-node": "^1.0.6",
-    "node.extend": "^2.0.1"
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^18.19.0",
+    "eslint": "^10.7.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^3.0.0"
   }
 }
