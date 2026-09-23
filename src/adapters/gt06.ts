@@ -13,9 +13,13 @@ const PROTO = {
   LBS: 0x11,
   GPS_LBS: 0x12,
   STATUS: 0x13,
+  STRING: 0x15,
   ALARM: 0x16,
   ALARM_2: 0x18,
   LBS_PHONE: 0x19,
+  GPS_ADDRESS: 0x1A,
+  GPS_2: 0x22,
+  TIME_SYNC: 0x8A,
 } as const;
 
 /** Concox frame markers: `7878` (1-byte length) and extended `7979` (2-byte length). */
@@ -100,6 +104,7 @@ export class Gt06Adapter extends BaseAdapter {
       }
       case PROTO.GPS:
       case PROTO.GPS_LBS:
+      case PROTO.GPS_2:
         packet = { ...base, action: 'ping', position: this.#parsePosition(content) };
         break;
       case PROTO.ALARM:
@@ -109,6 +114,11 @@ export class Gt06Adapter extends BaseAdapter {
       case PROTO.STATUS:
         packet = { ...base, action: 'heartbeat' };
         break;
+      case PROTO.STRING:
+        packet = { ...base, action: 'other', data: content.toString('ascii') };
+        break;
+      case PROTO.TIME_SYNC:
+      case PROTO.GPS_ADDRESS:
       default:
         packet = { ...base, action: 'other' };
     }
@@ -133,7 +143,7 @@ export class Gt06Adapter extends BaseAdapter {
 
   override handleCommand(packet: ParsedPacket): void {
     const proto = this.#proto(packet.raw);
-    if (proto === PROTO.LBS || proto === PROTO.LBS_PHONE) {
+    if (proto === PROTO.LBS || proto === PROTO.LBS_PHONE || proto === PROTO.TIME_SYNC) {
       this.#sendAck(proto, packet.serial ?? 0);
     }
   }

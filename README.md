@@ -55,6 +55,7 @@ please [report any issues](https://github.com/freshworkstudio/gps-tracking-nodej
 | `adapters.ST901`   | H02      | SinoTrack ST-901 and other H02 devices (`adapters.H02` is an alias) |
 | `adapters.GT02A`   | GT02     | GT02A                                               |
 | `adapters.TK510`   | TK510    | TK510                                               |
+| `adapters.ZX_A50`  | ZX-A50   | Zhongxun A50 (and other locators using its "Zhongxun Locator Communication Protocol") |
 
 Each server instance listens for **one** protocol. To support several device
 models at once, run one server per protocol on different ports.

@@ -66,6 +66,22 @@ export function binaryDate(data: Buffer, offset = 0): Date {
   );
 }
 
+/**
+ * Inverse of binaryDate: encode a UTC Date as six raw bytes YY MM DD HH mm ss
+ * (each byte the plain numeric value, not packed BCD), as used by the Concox
+ * GT06 family and most of its clones for position/status timestamps.
+ */
+export function toBinaryDate(date: Date): Buffer {
+  const buf = Buffer.alloc(6);
+  buf.writeUInt8(date.getUTCFullYear() - 2000, 0);
+  buf.writeUInt8(date.getUTCMonth() + 1, 1);
+  buf.writeUInt8(date.getUTCDate(), 2);
+  buf.writeUInt8(date.getUTCHours(), 3);
+  buf.writeUInt8(date.getUTCMinutes(), 4);
+  buf.writeUInt8(date.getUTCSeconds(), 5);
+  return buf;
+}
+
 /** 8 BCD bytes = 16 digits = a 15-digit IMEI with a leading zero. */
 export function bcdImei(bytes: Buffer): string {
   return bytes.toString('hex').replace(/^0/, '');
